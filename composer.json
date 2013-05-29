@@ -1,0 +1,45 @@
+{
+	"name": "bit3/contao-doctrine-dbal",
+	"description": "Doctrine DBAL Bridge for Contao Open Source CMS",
+	"keywords": ["contao", "doctrine", "dbal"],
+	"type": "contao-module",
+	"license": "LGPL-3.0+",
+	"authors": [
+		{
+			"name": "Tristan Lins",
+			"email": "tristan.lins@bit3.de",
+			"homepage": "http://bit3.de",
+			"role": "Developer"
+		}
+	],
+	"support": {
+		"email": "info@bit3.de",
+		"issues": "https://github.com/bit3/contao-doctrine/issues",
+		"irc": "irc://irc.freenode.org/contao.dev",
+		"source": "https://github.com/bit3/contao-doctrine"
+	},
+	"require": {
+		"php": ">=5.3",
+		"contao/core": ">=2.11.11,<3.2",
+		"bit3/contao-dependency-container": "~1",
+		"doctrine/dbal": "~2.3"
+	},
+	"suggest": {
+		"bit3/contao-doctrine-dbal-driver": "Use doctrine as database driver within Contao."
+	},
+	"autoload": {
+		"psr-0": {
+			"Contao\\Doctrine": "src/"
+		}
+	},
+	"extra": {
+		"contao": {
+			"symlinks": {
+				"contao": "system/modules/doctrine-dbal"
+			}
+		},
+		"branch-alias": {
+			"dev-master": "2.3.x-dev"
+		}
+	}
+}
