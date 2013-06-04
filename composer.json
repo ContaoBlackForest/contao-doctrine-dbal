@@ -22,7 +22,7 @@
 		"php": ">=5.3",
 		"contao/core": ">=2.11.11,<3.2",
 		"bit3/contao-dependency-container": "~1",
-		"doctrine/dbal": "~2.3"
+		"doctrine/dbal": "2.3.*"
 	},
 	"suggest": {
 		"bit3/contao-doctrine-dbal-driver": "Use doctrine as database driver within Contao."
