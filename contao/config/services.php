@@ -107,11 +107,13 @@ $container['doctrine.connection.default'] = $container->share(
 
 		$config = new \Doctrine\DBAL\Configuration();
 
+		// set cache
 		$cache = $container['doctrine.cache.default'];
 		if ($cache) {
 			$config->setResultCacheImpl($cache);
 		}
 
+		// build connection parameters
 		$connectionParameters = array(
 			'dbname'   => $GLOBALS['TL_CONFIG']['dbDatabase'],
 			'user'     => $GLOBALS['TL_CONFIG']['dbUser'],
@@ -137,6 +139,30 @@ $container['doctrine.connection.default'] = $container->share(
 			$connectionParameters['driverOptions'] = deserialize($GLOBALS['TL_CONFIG']['dbPdoDriverOptions'], true);
 		}
 
-		return \Doctrine\DBAL\DriverManager::getConnection($connectionParameters, $config);
+		// Register types
+		foreach ($GLOBALS['DOCTRINE_TYPES'] as $name => $className) {
+			\Doctrine\DBAL\Types\Type::addType($name, $className);
+		}
+
+		// Call hook prepareDoctrineConnection
+		if (array_key_exists('TL_HOOK', $GLOBALS) && array_key_exists('prepareDoctrineConnection', $GLOBALS['TL_HOOK']) && is_array($GLOBALS['TL_HOOK']['prepareDoctrineConnection'])) {
+			foreach ($GLOBALS['TL_HOOK']['prepareDoctrineConnection'] as $callback) {
+				$object = method_exists($callback[0], 'getInstance') ? call_user_func(array($callback[0], 'getInstance')) : new $callback[0];
+				$object->$callback[1]($connectionParameters, $config);
+			}
+		}
+
+		// establish connection
+		$connection = \Doctrine\DBAL\DriverManager::getConnection($connectionParameters, $config);
+
+		// Call hook doctrineConnect
+		if (array_key_exists('TL_HOOK', $GLOBALS) && array_key_exists('doctrineConnect', $GLOBALS['TL_HOOK']) && is_array($GLOBALS['TL_HOOK']['doctrineConnect'])) {
+			foreach ($GLOBALS['TL_HOOK']['doctrineConnect'] as $callback) {
+				$object = method_exists($callback[0], 'getInstance') ? call_user_func(array($callback[0], 'getInstance')) : new $callback[0];
+				$object->$callback[1]($connectionParameters, $config);
+			}
+		}
+
+		return $connection;
 	}
 );
