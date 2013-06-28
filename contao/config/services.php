@@ -17,76 +17,99 @@
 
 $container['doctrine.cache.default'] = $container->share(
 	function ($container) {
+		// reuse existing cache if the driver adapter is used
+		if (strtolower($GLOBALS['TL_CONFIG']['dbDriver']) == 'doctrinemysql') {
+			/** @var \Doctrine\DBAL\Connection $connection */
+			return \Database::getInstance()->getConnection()->getConfiguration()->getResultCacheImpl();
+		}
+
 		if ($container['doctrine.cache.impl.default'] == 'auto') {
-			if (extension_loaded('apc')) {
+			$container['doctrine.cache.impl.default'] = 'array';
+		}
+
+		$url = parse_url($container['doctrine.cache.impl.default']);
+		if (empty($url['scheme'])) {
+			$url['scheme'] = $url['path'];
+		}
+		switch ($url['scheme']) {
+			case 'apc':
 				$cache = new \Doctrine\Common\Cache\ApcCache();
-			} elseif (extension_loaded('xcache')) {
+				break;
+			case 'xcache':
 				$cache = new \Doctrine\Common\Cache\XcacheCache();
-			} elseif (extension_loaded('memcache')) {
+				break;
+			case 'memcache':
 				$memcache = new \Memcache();
-				$memcache->connect('127.0.0.1');
+				$memcache->connect(
+					empty($url['host']) ? '127.0.0.1' : $url['host'],
+					empty($url['port']) ? null : $url['port']
+				);
 				$cache = new \Doctrine\Common\Cache\MemcacheCache();
 				$cache->setMemcache($memcache);
-			} elseif (extension_loaded('redis')) {
+				break;
+			case 'redis':
 				$redis = new \Redis();
-				$redis->connect('127.0.0.1');
+				if (empty($url['path'])) {
+					$redis->connect(
+						empty($url['host']) ? '127.0.0.1' : $url['host'],
+						empty($url['port']) ? 6379 : $url['port']
+					);
+				}
+				else {
+					$redis->connect($url['path']);
+				}
 				$cache = new \Doctrine\Common\Cache\RedisCache();
 				$cache->setRedis($redis);
-			} else {
+				break;
+			case 'array':
 				$cache = new \Doctrine\Common\Cache\ArrayCache();
-			}
+				break;
+			default:
+				throw new RuntimeException('Invalid doctrine cache impl ' . $container['doctrine.cache.impl.default']);
 		}
-		else {
-			$url = parse_url($container['doctrine.cache.impl.default']);
-			if (empty($url['scheme'])) {
-				$url['scheme'] = $url['path'];
-			}
-			switch ($url['scheme']) {
-				case 'apc':
-					$cache = new \Doctrine\Common\Cache\ApcCache();
-					break;
-				case 'xcache':
-					$cache = new \Doctrine\Common\Cache\XcacheCache();
-					break;
-				case 'memcache':
-					$memcache = new \Memcache();
-					$memcache->connect(
-						empty($url['host']) ? '127.0.0.1' : $url['host'],
-						empty($url['port']) ? null : $url['port']
-					);
-					$cache = new \Doctrine\Common\Cache\MemcacheCache();
-					$cache->setMemcache($memcache);
-					break;
-				case 'redis':
-					$redis = new \Redis();
-					if (empty($url['path'])) {
-						$redis->connect(
-							empty($url['host']) ? '127.0.0.1' : $url['host'],
-							empty($url['port']) ? 6379 : $url['port']
-						);
-					}
-					else {
-						$redis->connect($url['path']);
-					}
-					$cache = new \Doctrine\Common\Cache\RedisCache();
-					$cache->setRedis($redis);
-					break;
-				case 'array':
-					$cache = new \Doctrine\Common\Cache\ArrayCache();
-					break;
-				default:
-					throw new RuntimeException('Invalid doctrine cache impl ' . $container['doctrine.cache.impl.default']);
-			}
-		}
+
 		return $cache;
 	}
 );
 
-$container['doctrine.cache.impl.default'] = 'auto';
+$container['doctrine.cache.impl.default'] = function() {
+	if (array_key_exists('dbCache_' . TL_MODE, $GLOBALS['TL_CONFIG'])) {
+		return $GLOBALS['TL_CONFIG']['dbCache_' . TL_MODE];
+	}
+	else if (array_key_exists('dbCache', $GLOBALS['TL_CONFIG'])) {
+		return $GLOBALS['TL_CONFIG']['dbCache'];
+	}
+	else {
+		return 'array';
+	}
+};
 
-$container['doctrine.cache.ttl.default'] = 0;
+$container['doctrine.cache.ttl.default'] = function() {
+	if (array_key_exists('dbCacheTTL_' . TL_MODE, $GLOBALS['TL_CONFIG'])) {
+		return $GLOBALS['TL_CONFIG']['dbCacheTTL_' . TL_MODE];
+	}
+	else if (array_key_exists('dbCacheTTL', $GLOBALS['TL_CONFIG'])) {
+		return $GLOBALS['TL_CONFIG']['dbCacheTTL'];
+	}
+	else if (TL_MODE == 'BE') {
+		return 1;
+	}
+	else {
+		return 15;
+	}
+};
 
-$container['doctrine.cache.key.default'] = 'contao_default_connection';
+$container['doctrine.cache.key.default'] = function() {
+	if (array_key_exists('dbCacheName_' . TL_MODE, $GLOBALS['TL_CONFIG'])) {
+		return $GLOBALS['TL_CONFIG']['dbCacheName_' . TL_MODE];
+	}
+	else if (array_key_exists('dbCacheName', $GLOBALS['TL_CONFIG'])) {
+		return $GLOBALS['TL_CONFIG']['dbCacheName'];
+	}
+	else {
+		return md5(TL_ROOT);
+	}
+};
 
 $container['doctrine.cache.profile.default'] = $container->share(
 	function ($container) {
