@@ -25,10 +25,10 @@ class MyClass
 Contao hooks
 ------------
 
-`$GLOBALS['TL_HOOK']['prepareDoctrineConnection'] = function(&$connectionParameters, &$config) { ... }`
+`$GLOBALS['TL_HOOKS']['prepareDoctrineConnection'] = function(&$connectionParameters, &$config) { ... }`
 Called before the connection will be established.
 
-`$GLOBALS['TL_HOOK']['doctrineConnect'] = function(&$connection) { ... }`
+`$GLOBALS['TL_HOOKS']['doctrineConnect'] = function(&$connection) { ... }`
 Called after the connection is established.
 
 Define a custom connection

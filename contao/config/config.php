@@ -17,4 +17,6 @@
 /**
  * Custom types
  */
-$GLOBALS['DOCTRINE_TYPES']['timestamp'] = 'Contao\Doctrine\DBAL\Types\TimestampType';
+$GLOBALS['DOCTRINE_TYPES']['timestamp']     = 'Contao\Doctrine\DBAL\Types\TimestampType';
+$GLOBALS['DOCTRINE_TYPES']['serialized']    = 'Contao\Doctrine\DBAL\Types\SerializedType';
+$GLOBALS['DOCTRINE_TYPES']['contaoBoolean'] = 'Contao\Doctrine\DBAL\Types\ContaoBooleanType';

@@ -16,43 +16,31 @@
 namespace Contao\Doctrine\DBAL\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\DateTimeType;
 use Doctrine\DBAL\Types\Type;
 
 /**
  *
  */
-class TimestampType extends DateTimeType
+class SerializedType extends Type
 {
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
-        return $platform->getIntegerTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getClobTypeDeclarationSQL($fieldDeclaration);
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        if (!$value) {
-            return null;
-        }
-
-        return $value->getTimestamp();
+        return serialize($value);
     }
 
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        if ($value === null || $value instanceof \DateTime) {
-            return $value;
-        }
-
-        $dateTime = new \DateTime();
-		$dateTime->setTimestamp($value);
-
-        return $dateTime;
+        return deserialize($value);
     }
 
     public function getName()
     {
-        return 'timestamp';
+        return 'serialized';
     }
 
     public function requiresSQLCommentHint(AbstractPlatform $platform)

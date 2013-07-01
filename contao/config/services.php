@@ -123,6 +123,11 @@ $container['doctrine.cache.profile.default'] = $container->share(
 
 $container['doctrine.connection.default'] = $container->share(
 	function ($container) {
+		// Register types
+		foreach ($GLOBALS['DOCTRINE_TYPES'] as $name => $className) {
+			\Doctrine\DBAL\Types\Type::addType($name, $className);
+		}
+
 		// reuse existing connection if the driver adapter is used
 		if (strtolower($GLOBALS['TL_CONFIG']['dbDriver']) == 'doctrinemysql') {
 			return \Database::getInstance()->getConnection();
@@ -162,14 +167,9 @@ $container['doctrine.connection.default'] = $container->share(
 			$connectionParameters['driverOptions'] = deserialize($GLOBALS['TL_CONFIG']['dbPdoDriverOptions'], true);
 		}
 
-		// Register types
-		foreach ($GLOBALS['DOCTRINE_TYPES'] as $name => $className) {
-			\Doctrine\DBAL\Types\Type::addType($name, $className);
-		}
-
 		// Call hook prepareDoctrineConnection
-		if (array_key_exists('TL_HOOK', $GLOBALS) && array_key_exists('prepareDoctrineConnection', $GLOBALS['TL_HOOK']) && is_array($GLOBALS['TL_HOOK']['prepareDoctrineConnection'])) {
-			foreach ($GLOBALS['TL_HOOK']['prepareDoctrineConnection'] as $callback) {
+		if (array_key_exists('TL_HOOKS', $GLOBALS) && array_key_exists('prepareDoctrineConnection', $GLOBALS['TL_HOOKS']) && is_array($GLOBALS['TL_HOOKS']['prepareDoctrineConnection'])) {
+			foreach ($GLOBALS['TL_HOOKS']['prepareDoctrineConnection'] as $callback) {
 				$object = method_exists($callback[0], 'getInstance') ? call_user_func(array($callback[0], 'getInstance')) : new $callback[0];
 				$object->$callback[1]($connectionParameters, $config);
 			}
@@ -179,8 +179,8 @@ $container['doctrine.connection.default'] = $container->share(
 		$connection = \Doctrine\DBAL\DriverManager::getConnection($connectionParameters, $config);
 
 		// Call hook doctrineConnect
-		if (array_key_exists('TL_HOOK', $GLOBALS) && array_key_exists('doctrineConnect', $GLOBALS['TL_HOOK']) && is_array($GLOBALS['TL_HOOK']['doctrineConnect'])) {
-			foreach ($GLOBALS['TL_HOOK']['doctrineConnect'] as $callback) {
+		if (array_key_exists('TL_HOOKS', $GLOBALS) && array_key_exists('doctrineConnect', $GLOBALS['TL_HOOKS']) && is_array($GLOBALS['TL_HOOKS']['doctrineConnect'])) {
+			foreach ($GLOBALS['TL_HOOKS']['doctrineConnect'] as $callback) {
 				$object = method_exists($callback[0], 'getInstance') ? call_user_func(array($callback[0], 'getInstance')) : new $callback[0];
 				$object->$callback[1]($connectionParameters, $config);
 			}

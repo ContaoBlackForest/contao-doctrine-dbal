@@ -16,43 +16,36 @@
 namespace Contao\Doctrine\DBAL\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\BooleanType;
 use Doctrine\DBAL\Types\DateTimeType;
 use Doctrine\DBAL\Types\Type;
 
 /**
  *
  */
-class TimestampType extends DateTimeType
+class ContaoBooleanType extends BooleanType
 {
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
-        return $platform->getIntegerTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getVarcharTypeDeclarationSQL(
+			array_merge(
+				$fieldDeclaration,
+				array(
+					 'length' => 1,
+					 'fixed' => true
+				)
+			)
+		);
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        if (!$value) {
-            return null;
-        }
-
-        return $value->getTimestamp();
-    }
-
-    public function convertToPHPValue($value, AbstractPlatform $platform)
-    {
-        if ($value === null || $value instanceof \DateTime) {
-            return $value;
-        }
-
-        $dateTime = new \DateTime();
-		$dateTime->setTimestamp($value);
-
-        return $dateTime;
+        return $value ? $platform->convertBooleans($value) : '';
     }
 
     public function getName()
     {
-        return 'timestamp';
+        return 'contaoBoolean';
     }
 
     public function requiresSQLCommentHint(AbstractPlatform $platform)
