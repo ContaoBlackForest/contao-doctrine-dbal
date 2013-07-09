@@ -64,6 +64,9 @@ $container['doctrine.cache.default'] = $container->share(
 			case 'array':
 				$cache = new \Doctrine\Common\Cache\ArrayCache();
 				break;
+			case false:
+				$cache = null;
+				break;
 			default:
 				throw new RuntimeException('Invalid doctrine cache impl ' . $container['doctrine.cache.impl.default']);
 		}
