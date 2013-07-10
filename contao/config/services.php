@@ -188,6 +188,8 @@ $container['doctrine.connection.default'] = $container->share(
 			$connectionParameters['driverOptions'] = deserialize($GLOBALS['TL_CONFIG']['dbPdoDriverOptions'], true);
 		}
 
+		$connectionParameters['defaultTableOptions'] = array('collate' => 'utf8_general_ci');
+
 		// Call hook prepareDoctrineConnection
 		if (array_key_exists('TL_HOOKS', $GLOBALS) && array_key_exists('prepareDoctrineConnection', $GLOBALS['TL_HOOKS']) && is_array($GLOBALS['TL_HOOKS']['prepareDoctrineConnection'])) {
 			foreach ($GLOBALS['TL_HOOKS']['prepareDoctrineConnection'] as $callback) {
