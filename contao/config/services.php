@@ -124,6 +124,24 @@ $container['doctrine.cache.profile.default'] = $container->share(
 	}
 );
 
+$container['doctrine.eventManager'] = $container->share(
+	function ($container) {
+		$eventManager = new \Doctrine\Common\EventManager();
+
+		if (array_key_exists('TL_HOOKS', $GLOBALS) &&
+			array_key_exists('prepareDoctrineEventManager', $GLOBALS['TL_HOOKS']) &&
+			is_array($GLOBALS['TL_HOOKS']['prepareDoctrineEventManager'])
+		) {
+			foreach ($GLOBALS['TL_HOOKS']['prepareDoctrineEventManager'] as $callback) {
+				$object = method_exists($callback[0], 'getInstance') ? call_user_func(array($callback[0], 'getInstance')) : new $callback[0];
+				$object->$callback[1]($eventManager);
+			}
+		}
+
+		return $eventManager;
+	}
+);
+
 $container['doctrine.connection.default'] = $container->share(
 	function ($container) {
 		// Register types
@@ -178,8 +196,11 @@ $container['doctrine.connection.default'] = $container->share(
 			}
 		}
 
+		/** @var \Doctrine\Common\EventManager $eventManager */
+		$eventManager = $container['doctrine.eventManager'];
+
 		// establish connection
-		$connection = \Doctrine\DBAL\DriverManager::getConnection($connectionParameters, $config);
+		$connection = \Doctrine\DBAL\DriverManager::getConnection($connectionParameters, $config, $eventManager);
 
 		// Call hook doctrineConnect
 		if (array_key_exists('TL_HOOKS', $GLOBALS) && array_key_exists('doctrineConnect', $GLOBALS['TL_HOOKS']) && is_array($GLOBALS['TL_HOOKS']['doctrineConnect'])) {
