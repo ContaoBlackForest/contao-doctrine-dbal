@@ -30,12 +30,12 @@ class SerializedType extends Type
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return serialize($value);
+        return $value !== null ? serialize($value) : null;
     }
 
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return deserialize($value);
+        return $value !== null ? deserialize($value) : null;
     }
 
     public function getName()
