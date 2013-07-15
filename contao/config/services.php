@@ -126,7 +126,15 @@ $container['doctrine.cache.profile.default'] = $container->share(
 
 $container['doctrine.eventManager'] = $container->share(
 	function ($container) {
-		$eventManager = new \Doctrine\Common\EventManager();
+		// reuse existing connection if the driver adapter is used
+		if (strtolower($GLOBALS['TL_CONFIG']['dbDriver']) == 'doctrinemysql') {
+			/** @var \Doctrine\DBAL\Connection $connection */
+			$connection = \Database::getInstance()->getConnection();
+			$eventManager = $connection->getEventManager();
+		}
+		else {
+			$eventManager = new \Doctrine\Common\EventManager();
+		}
 
 		if (array_key_exists('TL_HOOKS', $GLOBALS) &&
 			array_key_exists('prepareDoctrineEventManager', $GLOBALS['TL_HOOKS']) &&
