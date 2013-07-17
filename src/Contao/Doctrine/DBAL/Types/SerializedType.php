@@ -35,7 +35,7 @@ class SerializedType extends Type
 
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return $value !== null ? deserialize($value) : null;
+        return $value !== null ? unserialize($value) : null;
     }
 
     public function getName()
