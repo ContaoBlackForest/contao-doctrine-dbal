@@ -146,6 +146,14 @@ $container['doctrine.eventManager'] = $container->share(
 			}
 		}
 
+		if (isset($container['event-dispatcher'])) {
+			$event = new \Contao\Doctrine\DBAL\Event\InitializeEventManager($eventManager);
+
+			/** @var \Symfony\Component\EventDispatcher\EventDispatcher $eventDispatcher */
+			$eventDispatcher = $container['event-dispatcher'];
+			$eventDispatcher->dispatch(\Contao\Doctrine\DBAL\DoctrineDbalEvents::INITIALIZE_EVENT_MANAGER, $event);
+		}
+
 		return $eventManager;
 	}
 );
