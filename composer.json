@@ -20,9 +20,9 @@
 	},
 	"require": {
 		"php": ">=5.3",
-		"contao/core": ">=2.11.11,<3.2",
+		"contao/core": ">=2.11.11,<4-dev",
 		"contao-community-alliance/composer-installer": "*",
-		"bit3/contao-dependency-container": "~1",
+		"contao-community-alliance/dependency-container": "~1",
 		"doctrine/dbal": "2.4.*"
 	},
 	"suggest": {
@@ -40,7 +40,8 @@
 			}
 		},
 		"branch-alias": {
-			"dev-master": "1.0.x-dev"
+			"dev-master": "1.0.x-dev",
+			"dev-develop": "1.1.x-dev"
 		}
 	}
 }

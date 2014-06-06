@@ -21,26 +21,29 @@ use Doctrine\DBAL\Types\Type;
 /**
  *
  */
-class SerializedType extends Type
+class BinaryStringType extends Type
 {
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
-        return $platform->getClobTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getBlobTypeDeclarationSQL($fieldDeclaration);
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return $value !== null ? serialize($value) : null;
+        return $value;
     }
 
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return $value !== null ? unserialize($value) : null;
+        if (is_resource($value)) {
+            $value = stream_get_contents($value);
+        }
+        return $value;
     }
 
     public function getName()
     {
-        return 'serialized';
+        return 'binaryString';
     }
 
     public function requiresSQLCommentHint(AbstractPlatform $platform)

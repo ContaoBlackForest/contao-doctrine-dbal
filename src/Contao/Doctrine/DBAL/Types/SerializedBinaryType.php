@@ -21,11 +21,11 @@ use Doctrine\DBAL\Types\Type;
 /**
  *
  */
-class SerializedType extends Type
+class SerializedBinaryType extends Type
 {
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
-        return $platform->getClobTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getBlobTypeDeclarationSQL($fieldDeclaration);
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
@@ -40,7 +40,7 @@ class SerializedType extends Type
 
     public function getName()
     {
-        return 'serialized';
+        return 'serializedBinary';
     }
 
     public function requiresSQLCommentHint(AbstractPlatform $platform)
