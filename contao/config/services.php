@@ -220,6 +220,10 @@ $container['doctrine.connection.default'] = $container->share(
 		// establish connection
 		$connection = \Doctrine\DBAL\DriverManager::getConnection($connectionParameters, $config, $eventManager);
 
+		// fix platform differences
+		$platform = $connection->getDatabasePlatform();
+		$platform->registerDoctrineTypeMapping('bit', 'boolean');
+
 		// Call hook doctrineConnect
 		if (array_key_exists('TL_HOOKS', $GLOBALS) && array_key_exists('doctrineConnect', $GLOBALS['TL_HOOKS']) && is_array($GLOBALS['TL_HOOKS']['doctrineConnect'])) {
 			foreach ($GLOBALS['TL_HOOKS']['doctrineConnect'] as $callback) {
