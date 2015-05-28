@@ -8,13 +8,11 @@
         {
           "name": "Sven Baumann",
           "email": "baumann.sv@gmail.com",
-          "homepage": "",
           "role": "Developer"
         },
         {
           "name": "Dominik Tomasi",
           "email": "dominik.tomasi@gmail.com",
-          "homepage": "",
           "role": "Developer"
         }
 	],
@@ -27,6 +25,7 @@
 		"contao/core": ">=2.11.11,<4-dev",
 		"contao-community-alliance/composer-installer": "*",
 		"contao-community-alliance/dependency-container": "~1",
+        "contao-community-alliance/event-dispatcher": "~1.3",
 		"doctrine/dbal": "2.4.*"
 	},
 	"suggest": {
