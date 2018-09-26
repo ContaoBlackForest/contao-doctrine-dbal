@@ -144,7 +144,7 @@ $container['doctrine.eventManager'] = $container->share(
                     $callback[0],
                     'getInstance'
                 )) : new $callback[0];
-                $object->$callback[1]($eventManager);
+                $object->{$callback[1]}($eventManager);
             }
         }
 
