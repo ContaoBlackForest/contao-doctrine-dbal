@@ -18,23 +18,30 @@ namespace Contao\Doctrine\DBAL\Event;
 use Doctrine\Common\EventManager;
 use Symfony\Component\EventDispatcher\Event;
 
+/**
+ * Class InitializeEventManager
+ * @package Contao\Doctrine\DBAL
+ */
 class InitializeEventManager extends Event
 {
-	/**
-	 * @var EventManager
-	 */
-	protected $eventManager;
+    /**
+     * @var EventManager
+     */
+    protected $eventManager;
 
-	function __construct(EventManager $eventManager)
-	{
-		$this->eventManager = $eventManager;
-	}
+    /**
+     * @param EventManager $eventManager
+     */
+    public function __construct(EventManager $eventManager)
+    {
+        $this->eventManager = $eventManager;
+    }
 
-	/**
-	 * @return \Doctrine\Common\EventManager
-	 */
-	public function getEventManager()
-	{
-		return $this->eventManager;
-	}
+    /**
+     * @return \Doctrine\Common\EventManager
+     */
+    public function getEventManager()
+    {
+        return $this->eventManager;
+    }
 }

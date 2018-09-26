@@ -17,37 +17,53 @@ namespace Contao\Doctrine\DBAL\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\BooleanType;
-use Doctrine\DBAL\Types\DateTimeType;
-use Doctrine\DBAL\Types\Type;
 
 /**
- *
+ * Class ContaoBooleanType
+ * @package Contao\Doctrine\DBAL
  */
 class ContaoBooleanType extends BooleanType
 {
+    /**
+     * @param array $fieldDeclaration
+     * @param AbstractPlatform $platform
+     * @return string
+     */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
         return $platform->getVarcharTypeDeclarationSQL(
-			array_merge(
-				$fieldDeclaration,
-				array(
-					 'length' => 1,
-					 'fixed' => true
-				)
-			)
-		);
+            array_merge(
+                $fieldDeclaration,
+                array(
+                    'length' => 1,
+                    'fixed' => true
+                )
+            )
+        );
     }
 
+    /**
+     * @param mixed $value
+     * @param AbstractPlatform $platform
+     * @return mixed|string
+     */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         return $value ? $platform->convertBooleans($value) : '';
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return 'contaoBoolean';
     }
 
+    /**
+     * @param AbstractPlatform $platform
+     * @return bool
+     */
     public function requiresSQLCommentHint(AbstractPlatform $platform)
     {
         return true;

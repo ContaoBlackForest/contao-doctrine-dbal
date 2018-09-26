@@ -19,20 +19,36 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 
 /**
- *
+ * Class BinaryStringType
+ * @package Contao\Doctrine\DBAL\Types
  */
 class BinaryStringType extends Type
 {
+    /**
+     * @param array $fieldDeclaration
+     * @param AbstractPlatform $platform
+     * @return string
+     */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
         return $platform->getBlobTypeDeclarationSQL($fieldDeclaration);
     }
 
+    /**
+     * @param mixed $value
+     * @param AbstractPlatform $platform
+     * @return mixed
+     */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         return $value;
     }
 
+    /**
+     * @param mixed $value
+     * @param AbstractPlatform $platform
+     * @return mixed|string
+     */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         if (is_resource($value)) {
@@ -41,11 +57,18 @@ class BinaryStringType extends Type
         return $value;
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return 'binaryString';
     }
 
+    /**
+     * @param AbstractPlatform $platform
+     * @return bool
+     */
     public function requiresSQLCommentHint(AbstractPlatform $platform)
     {
         return true;

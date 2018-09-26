@@ -17,18 +17,28 @@ namespace Contao\Doctrine\DBAL\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\DateTimeType;
-use Doctrine\DBAL\Types\Type;
 
 /**
- *
+ * Class TimestampType
+ * @package Contao\Doctrine\DBAL
  */
 class TimestampType extends DateTimeType
 {
+    /**
+     * @param array $fieldDeclaration
+     * @param AbstractPlatform $platform
+     * @return string
+     */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
         return $platform->getIntegerTypeDeclarationSQL($fieldDeclaration);
     }
 
+    /**
+     * @param mixed $value
+     * @param AbstractPlatform $platform
+     * @return null
+     */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
         if (!$value) {
@@ -38,6 +48,11 @@ class TimestampType extends DateTimeType
         return $value->getTimestamp();
     }
 
+    /**
+     * @param mixed $value
+     * @param AbstractPlatform $platform
+     * @return \DateTime|mixed
+     */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         if ($value === null || $value instanceof \DateTime) {
@@ -45,16 +60,23 @@ class TimestampType extends DateTimeType
         }
 
         $dateTime = new \DateTime();
-		$dateTime->setTimestamp($value);
+        $dateTime->setTimestamp($value);
 
         return $dateTime;
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return 'timestamp';
     }
 
+    /**
+     * @param AbstractPlatform $platform
+     * @return bool
+     */
     public function requiresSQLCommentHint(AbstractPlatform $platform)
     {
         return true;
