@@ -220,7 +220,7 @@ $container['doctrine.connection.default'] = $container->share(
                     $callback[0],
                     'getInstance'
                 )) : new $callback[0];
-                $object->$callback[1]($connectionParameters, $config);
+                $object->{$callback[1]}($connectionParameters, $config);
             }
         }
 
@@ -244,7 +244,7 @@ $container['doctrine.connection.default'] = $container->share(
                     $callback[0],
                     'getInstance'
                 )) : new $callback[0];
-                $object->$callback[1]($connectionParameters, $config);
+                $object->{$callback[1]}($connectionParameters, $config);
             }
         }
 
